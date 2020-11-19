@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Pokedex-API</title>
+    <script>
+      //Attach click handler
+      function attach_get_img_src_id_handler() {
+        $("img").click(function () {
+          console.log("clicked an image");
+          console.log("src =>", $(this).attr("src"));
+          console.log("id ->", $(this).attr("id"));
+
+          // reset
+          $("div.row img").css("border", "0px solid yellow");
+          $("div.row img").css("background-color", "grey");
+          // enable outline that pic
+          $(this).css("border", "1px solid yellow");
+          $(this).css("background-color", "rgb(107, 107, 107)");
+
+          // get the id and store it
+          var pokeId = $(this).attr("id");
+          // now on every this click fetch DATA from scr ID and console.log
+          $.get(
+            "https://pokeapi.co/api/v2/pokemon/" + pokeId,
+            function (serverResponseData) {
+              console.log(serverResponseData);
+              // ok we got data back! now traverse and store name
+              var pokeName = serverResponseData.name;
+              // console.log(pokeName);
+              // put name is HTML
+              $("h4.poke-name").html(pokeName);
+
+              // get img, store it and display it
+              // console.log("img->", serverResponseData.sprites.front_default);
+              var pokeImg = serverResponseData.sprites.front_default;
+              $("img.poke-img").attr("src", pokeImg);
+
+              // get types ul li
+              var types = serverResponseData.types;
+              var typesLength = serverResponseData.types.length;
+              console.log("types ->", types);
+              console.log("types.length ->", typesLength);
+              // create loop as many as typesLength
+              // clear previous ul types
+              $("ul").html("");
+              for (type in types) {
+                console.log(types[type].type.name);
+                PokeType = types[type].type.name;
+                $("ul").append("<li>" + PokeType + "</li>");
+              }
+
+              var pokeHeight = serverResponseData.height;
+              var pokeWeight = serverResponseData.weight;
+              // console.log("pokeHeight", pokeHeight);
+              // console.log("pokeWeight", pokeWeight);
+              $("p.height").html(pokeHeight);
+              $("p.weight").html(pokeWeight);
+            },
+            "json"
+          );
+        });
+      }
+      // -----------------------READY FROM NOW------------------------------------
+      $(document).ready(function () {
+        // click to fetch
+
+        // img class="poke-img" src="./who.jpg"
+        console.log(
+          "\noriginal img placeholder src ->",
+          $("img.poke-img").attr("src"),
+          "\n"
+        );
+        var imgPlaceholder = $("img.poke-img").attr("src");
+        // check if original placeholder exists, then resize
+        if (imgPlaceholder == "./who.jpg") {
+          console.log(true);
+          $("img.poke-img").css("width", "100px");
+        }
+
+        function catchThemAll() {
+          // var imgArray = [];
+          for (i = 1; i <= 151; i++) {
+            var pokeIdLinkStr = "";
+            pokeIdLinkStr += "<a href=";
+            $("div.row").append(
+              "<img id=" +
+                i +
+                " src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/" +
+                i +
+                ".png'/>"
+            );
+            // imgArray.push(i);
+            // console.log(`${i} pokemon loaded`);
+            $("h4").text(" Select a Pokemon to see more!");
+          } // end for loop
+          //$(this).hide();
+          $("button").hide();
+          attach_get_img_src_id_handler();
+          // return imgArray;
+        }
+
+        // new way of getting all images
+        // $.get("url", function (serverRes) {}, "json");
+
+        catchThemAll();
+      });
+    </script>
+    <style>
+      * {
+        /* outline: 1px solid red; */
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+        color: white;
+        background-color: rgb(71, 71, 71);
+      }
+      .wrapper {
+        background-color: rgb(71, 71, 71);
+        min-height: 800px;
+        padding-top: 30px;
+      }
+      .container {
+        width: 800px;
+        min-height: 100px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 15px;
+        background-color: rgb(168, 91, 31);
+        /* border-radius: 20px; */
+      }
+      header img {
+        width: 100%;
+        display: block;
+        margin: 0 auto;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+      h1 {
+        padding: 10px;
+        text-align: center;
+        border-radius: 15px;
+        border: 1px solid grey;
+        background-color: grey;
+        color: white;
+        margin-bottom: 20px;
+      }
+      h4 {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px;
+        /* border-bottom: 1px solid black; */
+        /* box-shadow: 2px 5px 5px black; */
+        margin-bottom: 10px;
+        background-color: rgb(92, 91, 91);
+        border-radius: 15px;
+      }
+
+      div.row,
+      img {
+        background-color: grey;
+        border-radius: 15px;
+        cursor: pointer;
+      }
+      div.group-main-aside {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        background-color: rgb(168, 91, 31);
+      }
+      main {
+        background-color: grey;
+        min-height: 20px;
+        border-radius: 15px;
+        border: 1px solid black;
+        text-align: center;
+        /* change when clicked? */
+        width: 70%;
+        /* display: inline-block;
+        vertical-align: top; */
+      }
+      aside {
+        /* display: inline-block;
+        vertical-align: top; */
+        width: 25%;
+        min-height: 100px;
+        background-color: grey;
+        /* background-color: red; */
+        border-radius: 15px;
+        border: 1px solid black;
+        padding-top: 10px;
+      }
+      aside h4 {
+        text-align: center;
+        width: fit-content;
+        /* margin-top: 10px; */
+        display: block;
+        margin: 0 auto;
+      }
+      /* border aside top */
+      aside .pokemon-group {
+        background-color: grey;
+        border-radius: 15px 15px 0 0;
+        margin-top: 10px;
+        border-radius: 0 0 15px 15px;
+      }
+      aside .pokemon-group :nth-child(2) {
+        /* background-color: red; */
+        border-radius: 15px 15px 0 0;
+      }
+      aside h5 {
+        padding: 10px 0 10px 10px;
+        text-decoration: underline;
+      }
+      aside p {
+        padding-left: 10px;
+      }
+      aside ul li {
+        margin-left: 20px;
+        /* background-color: aqua; */
+      }
+      aside img {
+        background-color: grey;
+        display: block;
+        margin: 0 auto;
+        margin-bottom: 10px;
+        border: 2px solid yellow;
+      }
+      /* background group color */
+      aside h5,
+      aside p,
+      aside ul,
+      aside li {
+        background-color: rgb(107, 107, 107);
+      }
+
+      /* border aside bottom */
+      aside p.weight {
+        padding-bottom: 10px;
+        border-radius: 0 0 15px 15px;
+      }
+
+      button {
+        background-color: orange;
+        border: 1px solid orange;
+        padding: 20px;
+        align-items: center;
+        display: block;
+        margin: 0 auto;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        font-size: 16pt;
+        background: linear-gradient(orange, rgb(85, 55, 1));
+        cursor: pointer;
+      }
+      button:hover {
+        background: linear-gradient(rgb(85, 55, 1), orange);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <header>
+          <img src="./pokeman-banner.png" alt="" />
+        </header>
+        <h1>PokeDex-API</h1>
+        <button>Click to catch 151 Pokemon!</button>
+        <div class="group-main-aside">
+          <main>
+            <h4>Gotta Catch Em' ALL!</h4>
+            <div class="row"></div>
+          </main>
+
+          <aside>
+            <h4 class="poke-name">Pokemon name</h4>
+            <div class="pokemon-group">
+              <img class="poke-img" src="./who.jpg" />
+              <h5>Type:</h5>
+              <ul>
+                <!-- <li></li> -->
+              </ul>
+
+              <h5>height:</h5>
+              <p class="height">3.3</p>
+              <h5>Weight</h5>
+              <p class="weight">33</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
